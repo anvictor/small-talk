@@ -70,8 +70,10 @@ app.post('/upload-voice', upload.single('audio'), (req, res) => {
     // Store voice message in memory
     storeVoiceMessage(messageId, req.file.buffer, req.file.mimetype);
 
-    // Return URL for retrieving the voice message
-    const url = `/voice/${messageId}`;
+    // Return FULL URL for retrieving the voice message (not relative path)
+    // This is critical for production where frontend and backend are on different domains
+    const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+    const url = `${backendUrl}/voice/${messageId}`;
     
     res.json({
       success: true,
