@@ -20,17 +20,45 @@ const app = express();
 const httpServer = createServer(app);
 
 // Configure CORS for Express
-app.use(cors({
-  origin: [FRONTEND_URL, 'http://localhost:3000', 'https://*.vercel.app'],
+// Dynamic origin validation to support Vercel preview deployments
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allowed origins
+    const allowedOrigins = [
+      FRONTEND_URL,
+      'http://localhost:3000',
+      'http://localhost:3001'
+    ];
+    
+    // Check if origin is in allowed list or is a Vercel deployment
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
 // Configure Socket.IO with CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: [FRONTEND_URL, 'http://localhost:3000', 'https://*.vercel.app'],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      const allowedOrigins = [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001'];
+      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
     credentials: true
   }
