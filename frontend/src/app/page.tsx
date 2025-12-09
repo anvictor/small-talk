@@ -11,8 +11,8 @@ export default function Home() {
   const router = useRouter();
 
   const createRoom = () => {
-    // Generate unique room ID
-    const roomId = `room-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique room ID (without 'room-' prefix since URL already has /room/)
+    const roomId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     router.push(`/room/${roomId}`);
   };
 
