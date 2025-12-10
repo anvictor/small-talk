@@ -71,7 +71,7 @@ export default function ChatWindow({ messages, currentNickname }: ChatWindowProp
                   <div className="flex items-center gap-2">
                     <audio
                       controls
-                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'}${message.url}`}
+                      src={message.url}  // message.url now contains full URL from backend
                       className="max-w-full"
                       style={{ height: '32px' }}
                     />
